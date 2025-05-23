@@ -19,7 +19,7 @@ public class FoodPriceCalculatorTests {
 
         double price = calculator.calculatePrice(product, LocalDate.now(), 3, 10);
 
-        // base price = 10 * 1.2 = 12, no discount because expiry > 3 days
+
         assertEquals(12.0, price, 0.001);
     }
 
@@ -35,7 +35,7 @@ public class FoodPriceCalculatorTests {
 
         double price = calculator.calculatePrice(product, LocalDate.now(), 3, 10);
 
-        // base price before discount = 12, discount 10% applied -> 12 * 0.9 = 10.8
+
         assertEquals(10.8, price, 0.001);
     }
 
@@ -51,4 +51,21 @@ public class FoodPriceCalculatorTests {
 
         assertEquals(0.0, price, 0.001);
     }
+
+    @Test
+    public void testCalculatePrice_NullValues() {
+        Product product = mock(Product.class);
+
+        when(product.isExpired(any())).thenReturn(false);
+        when(product.getDeliveryPrice()).thenReturn(0.0);
+        when(product.getExpirationDate()).thenReturn(LocalDate.now().plusDays(5));
+
+        FoodPriceCalculator calculator = new FoodPriceCalculator(20.0);
+
+        double price = calculator.calculatePrice(product, LocalDate.now(), 3, 10);
+
+
+        assertEquals(0.0, price, 0.001);
+    }
+
 }
