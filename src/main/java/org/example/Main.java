@@ -49,7 +49,7 @@ public class Main {
             System.out.println(receipt); // uses toString()
             System.out.println("Receipt has been saved and serialized.");
 
-            // 7. Load from .ser (for demo)
+
             Receipt loaded = Receipt.loadFromSerialized("receipts/receipt_" + receipt.getNumber() + ".ser");
             System.out.println("Loaded receipt total: " + loaded.getTotal());
 
@@ -64,7 +64,7 @@ public class Main {
         System.out.println("Total delivery cost: " + shop.calculateDeliveryCosts());
         System.out.println("Profit: " + shop.calculateProfit());
 
-        // 9. Load receipts from folder (if any)
+        // 9. Load receipts from folder
         shop.loadReceiptsFromFolder("receipts");
     }
 }
