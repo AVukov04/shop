@@ -5,6 +5,7 @@ import org.example.model.sales.Receipt;
 import org.example.model.sales.SoldItem;
 import org.example.model.staff.Cashier;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
@@ -66,6 +67,7 @@ public class Shop {
 
         receipts.add(receipt);
         receipt.saveToFile(saveFolder);
+        receipt.saveAsSerialized(saveFolder);
         return receipt;
     }
 
@@ -90,5 +92,37 @@ public class Shop {
     public int getTotalReceipts() {
         return receipts.size();
     }
+
+    public void loadReceiptsFromFolder(String folderPath) {
+        File folder = new File(folderPath);
+        if (!folder.exists() || !folder.isDirectory()) {
+            System.out.println("Folder does not exist: " + folderPath);
+            return;
+        }
+
+        File[] files = folder.listFiles((dir, name) -> name.endsWith(".ser"));
+        if (files == null || files.length == 0) {
+            System.out.println("No receipt files found in: " + folderPath);
+            return;
+        }
+
+        int loaded = 0;
+        double total = 0;
+
+        for (File file : files) {
+            try {
+                Receipt r = Receipt.loadFromSerialized(file.getAbsolutePath());
+                receipts.add(r);
+                loaded++;
+                total += r.getTotal();
+            } catch (IOException | ClassNotFoundException e) {
+                System.out.println("Failed to load: " + file.getName() + " → " + e.getMessage());
+            }
+        }
+
+        System.out.println("Loaded " + loaded + " receipts.");
+        System.out.printf("Total revenue from loaded receipts: %.2f%n", total);
+    }
 }
+
 

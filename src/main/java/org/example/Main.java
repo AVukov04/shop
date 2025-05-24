@@ -43,19 +43,31 @@ public class Main {
 
         try {
             Receipt receipt = shop.sellProducts(order, "C001", 3, 10.0, "receipts");
+
+            // 6. Show and save receipt
             System.out.println("Sale completed successfully!");
-            System.out.println("Total amount: " + receipt.getTotal());
-        } catch (IOException e) {
-            System.out.println("Error writing receipt: " + e.getMessage());
-        } catch (IllegalArgumentException e) {
-            System.out.println("Sale error: " + e.getMessage());
+            System.out.println(receipt); // uses toString()
+            System.out.println("Receipt has been saved and serialized.");
+
+            // 7. Load from .ser (for demo)
+            Receipt loaded = Receipt.loadFromSerialized("receipts/receipt_" + receipt.getNumber() + ".ser");
+            System.out.println("Loaded receipt total: " + loaded.getTotal());
+
+        } catch (IOException | ClassNotFoundException e) {
+            System.out.println("Error: " + e.getMessage());
         }
 
-        // 6. Summary
+        // 8. Financial summary
+        System.out.println("\n--- Shop Summary ---");
         System.out.println("Total income: " + shop.calculateTotalIncome());
         System.out.println("Total salaries: " + shop.calculateTotalSalaries());
         System.out.println("Total delivery cost: " + shop.calculateDeliveryCosts());
         System.out.println("Profit: " + shop.calculateProfit());
+
+        // 9. Load receipts from folder (if any)
+        shop.loadReceiptsFromFolder("receipts");
     }
 }
+
+
 

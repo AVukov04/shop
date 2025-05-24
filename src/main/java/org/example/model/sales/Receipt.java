@@ -32,34 +32,60 @@ public class Receipt implements Serializable {
     }
 
     public void saveToFile(String folderPath) throws IOException {
-        // Създаване на папката, ако не съществува
         File folder = new File(folderPath);
         if (!folder.exists()) {
             folder.mkdirs();
         }
 
         String filename = folderPath + "/receipt_" + number + ".txt";
-        try (PrintWriter writer = new PrintWriter(filename)) {
-            writer.println("Receipt #" + number);
-            writer.println("Cashier: " + cashier.getName() + " (ID: " + cashier.getId() + ")");
-            writer.println("Date: " + dateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
-            writer.println("Items:");
-            for (SoldItem item : items) {
-                writer.println(" - " + item);
-            }
-            writer.printf("Total: %.2f%n", getTotal());
+        try (PrintWriter writer = new PrintWriter(
+                new OutputStreamWriter(new FileOutputStream(filename), "UTF-8"))) {
+            writer.println(this); // използва toString() метода
         }
     }
 
     public static Receipt readFromFile(String filepath) throws IOException {
         try (BufferedReader reader = new BufferedReader(new FileReader(filepath))) {
             reader.lines().forEach(System.out::println);
-            return null; // реална десериализация по-късно
+            return null; // само за визуализация, не възстановява обекта
+        }
+    }
+
+    public void saveAsSerialized(String folderPath) throws IOException {
+        File folder = new File(folderPath);
+        if (!folder.exists()) {
+            folder.mkdirs();
+        }
+
+        String filename = folderPath + "/receipt_" + number + ".ser";
+        try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(filename))) {
+            out.writeObject(this);
+        }
+    }
+
+    public static Receipt loadFromSerialized(String filepath) throws IOException, ClassNotFoundException {
+        try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(filepath))) {
+            return (Receipt) in.readObject();
         }
     }
 
     public int getNumber() {
         return number;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Receipt #").append(number).append("\n");
+        sb.append("Cashier: ").append(cashier.getName())
+                .append(" (ID: ").append(cashier.getId()).append(")\n");
+        sb.append("Date: ").append(dateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))).append("\n");
+        sb.append("Items:\n");
+        for (SoldItem item : items) {
+            sb.append(" - ").append(item).append("\n");
+        }
+        sb.append(String.format("Total: %.2f", getTotal()));
+        return sb.toString();
     }
 }
 
