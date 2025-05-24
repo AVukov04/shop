@@ -5,7 +5,8 @@ import org.example.model.staff.Cashier;
 import java.io.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Receipt implements Serializable {
     private static int counter = 1;
@@ -31,6 +32,12 @@ public class Receipt implements Serializable {
     }
 
     public void saveToFile(String folderPath) throws IOException {
+        // Създаване на папката, ако не съществува
+        File folder = new File(folderPath);
+        if (!folder.exists()) {
+            folder.mkdirs();
+        }
+
         String filename = folderPath + "/receipt_" + number + ".txt";
         try (PrintWriter writer = new PrintWriter(filename)) {
             writer.println("Receipt #" + number);
@@ -47,7 +54,7 @@ public class Receipt implements Serializable {
     public static Receipt readFromFile(String filepath) throws IOException {
         try (BufferedReader reader = new BufferedReader(new FileReader(filepath))) {
             reader.lines().forEach(System.out::println);
-            return null; // Прочитане само за визуализация за сега
+            return null; // реална десериализация по-късно
         }
     }
 
@@ -55,4 +62,5 @@ public class Receipt implements Serializable {
         return number;
     }
 }
+
 
