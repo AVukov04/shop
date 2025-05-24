@@ -13,18 +13,18 @@ import java.util.Map;
 
 public class Main {
     public static void main(String[] args) {
-        // 1. Настройка на магазина
+        // 1. Setup shop
         Shop shop = new Shop();
 
-        // 2. Добавяне на касиер
+        // 2. Add a cashier
         Cashier cashier = new Cashier("C001", "Ivan Ivanov", 1200.0);
         shop.addCashier(cashier);
 
-        // 3. Създаване на калкулатори
-        PriceCalculator foodCalc = new FoodPriceCalculator(30);     // 30% надценка
-        PriceCalculator nonFoodCalc = new NonFoodPriceCalculator(15); // 15% надценка
+        // 3. Price calculators
+        PriceCalculator foodCalc = new FoodPriceCalculator(30);       // 30% markup
+        PriceCalculator nonFoodCalc = new NonFoodPriceCalculator(15); // 15% markup
 
-        // 4. Добавяне на продукти
+        // 4. Add products
         Product milk = new FoodProduct("F001", "Milk", 1.00,
                 LocalDate.now().plusDays(4), 10, foodCalc);
         Product bread = new FoodProduct("F002", "Bread", 0.80,
@@ -36,25 +36,26 @@ public class Main {
         shop.addProduct(bread);
         shop.addProduct(shampoo);
 
-        // 5. Симулиране на продажба
+        // 5. Simulate sale
         Map<String, Integer> order = new HashMap<>();
-        order.put("F001", 2); // 2 броя Milk
-        order.put("N001", 1); // 1 брой Shampoo
+        order.put("F001", 2); // 2 x Milk
+        order.put("N001", 1); // 1 x Shampoo
 
         try {
             Receipt receipt = shop.sellProducts(order, "C001", 3, 10.0, "receipts");
-            System.out.println("Продажба успешно извършена!");
-            System.out.println("Обща сума: " + receipt.getTotal());
+            System.out.println("Sale completed successfully!");
+            System.out.println("Total amount: " + receipt.getTotal());
         } catch (IOException e) {
-            System.out.println("Грешка при записване на бележка: " + e.getMessage());
+            System.out.println("Error writing receipt: " + e.getMessage());
         } catch (IllegalArgumentException e) {
-            System.out.println("Грешка при продажба: " + e.getMessage());
+            System.out.println("Sale error: " + e.getMessage());
         }
 
-        // 6. Извеждане на финанси
-        System.out.println("Общ приход: " + shop.calculateTotalIncome());
-        System.out.println("Общи разходи (заплати): " + shop.calculateTotalSalaries());
-        System.out.println("Разходи по доставки: " + shop.calculateDeliveryCosts());
-        System.out.println("Печалба: " + shop.calculateProfit());
+        // 6. Summary
+        System.out.println("Total income: " + shop.calculateTotalIncome());
+        System.out.println("Total salaries: " + shop.calculateTotalSalaries());
+        System.out.println("Total delivery cost: " + shop.calculateDeliveryCosts());
+        System.out.println("Profit: " + shop.calculateProfit());
     }
 }
+
