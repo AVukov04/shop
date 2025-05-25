@@ -49,7 +49,7 @@ public class Main {
             System.out.println(receipt); // uses toString()
             System.out.println("Receipt has been saved and serialized.");
 
-
+            // 7. Load from .ser
             Receipt loaded = Receipt.loadFromSerialized("receipts/receipt_" + receipt.getNumber() + ".ser");
             System.out.println("Loaded receipt total: " + loaded.getTotal());
 

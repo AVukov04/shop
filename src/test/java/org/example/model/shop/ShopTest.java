@@ -21,7 +21,7 @@ public class ShopTest {
     @BeforeEach
     public void setUp() {
         shop = new Shop();
-        shop.addCashier(new Cashier("C001", "Test Cashier", 1000.0));
+        shop.addCashier(new Cashier("C001", "Test Cashier", 1000));
 
         FoodPriceCalculator calculator = new FoodPriceCalculator(30);
         FoodProduct product = new FoodProduct("P001", "Test Milk", 1.0,
@@ -35,15 +35,13 @@ public class ShopTest {
         order.put("P001", 2);
 
         File testFolder = new File("test_receipts");
-        if (!testFolder.exists()) {
-            testFolder.mkdirs();
-        }
+        if (!testFolder.exists()) testFolder.mkdirs();
 
         var receipt = shop.sellProducts(order, "C001", 2, 10, "test_receipts");
 
-        assertEquals(8, shop.findProductById("P001").getQuantity(), "Quantity not reduced correctly.");
-        assertTrue(receipt.getTotal() > 0, "Total price should be greater than 0.");
-        assertTrue(new File("test_receipts/receipt_" + receipt.getNumber() + ".txt").exists(), "Receipt file not created.");
+        assertEquals(8, shop.findProductById("P001").getQuantity());
+        assertTrue(receipt.getTotal() > 0);
+        assertTrue(new File("test_receipts/receipt_" + receipt.getNumber() + ".txt").exists());
     }
 
     @Test
@@ -68,5 +66,23 @@ public class ShopTest {
         });
 
         assertTrue(exception.getMessage().contains("Not enough quantity"));
+    }
+
+    @Test
+    public void testLoadReceiptsFromFolder() throws IOException {
+        // Arrange
+        Cashier cashier = new Cashier("C002", "Petar", 1000);
+        shop.addCashier(cashier);
+
+        var receipt = new org.example.model.sales.Receipt(cashier);
+        receipt.addItem(new org.example.model.sales.SoldItem("Test Item", 2, 1.5));
+        receipt.saveAsSerialized("test_receipts");
+
+        int before = shop.getTotalReceipts();
+
+        shop.loadReceiptsFromFolder("test_receipts");
+
+        int after = shop.getTotalReceipts();
+        assertTrue(after > before);
     }
 }
